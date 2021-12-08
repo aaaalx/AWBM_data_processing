@@ -1,0 +1,1 @@
+https://dap.tern.org.au/thredds/ncss/CMIP5QLD/CMIP5_Downscaled_CCAM_QLD10/RCP85/daily_adjusted/Precipitation/rnd24Adjust.daily.ccam10-awap_ACCESS1-0Q_rcp85.nc?var=rnd24Adjust&north=-26&west=152&east=153&south=-27&disableProjSubset=on&horizStride=1&time_start=1985-01-01T15%3A00%3A00Z&time_end=2099-12-31T15%3A00%3A00Z&timeStride=1
