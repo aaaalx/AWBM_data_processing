@@ -25,7 +25,8 @@ import glob
 tic = time.time() # starts the run time timer 
 
 # dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/'
-dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/TERN_downloads/'
+# dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/TERN_downloads/'
+dir_Data = 'C:/Users/alex.xynias/OneDrive - Water Technology Pty Ltd/UQ/Thesis/Data/SILO_downloads'
 # dir_Data = 'C:/Users/alex.xynias/OneDrive - Water Technology Pty Ltd/UQ/Thesis/nc_clean/netCDF4_input/'
     # the location of the .nc data (also where output is written to)
 
@@ -46,8 +47,6 @@ infile_list = glob.glob(infile_form) # generates the list of files in dir_Data w
 
 
 # outfile = 'test_compile.csv' # name of compiled csv file to be written
-
-
 
 extent_east = 151.6 # east most longitude value (degrees)
 extent_west = 153.0 # west most longitude value (degrees)
@@ -117,6 +116,7 @@ for file_location in infile_list:
     
     
     print('Compiling dataframe ...')
+      
     df = pd.DataFrame({
         'time': [t.isoformat() for t in times_grid],
         'latitude': latitudes_grid,
