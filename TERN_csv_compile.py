@@ -36,7 +36,7 @@ import time
 
 # Input data information 
 # (must end in /)
-dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/TERN_testdata/'
+dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/TERN_downloads/'
 
 dict_model = {
     # RCP4.5
@@ -86,14 +86,11 @@ outfile_prefix = 'Compile-'
 # =============================================================================
 #%% Script
 # =============================================================================
-dict_model =  {
-    1: 'CSIRO-Mk3-6-0Q_rcp45'
-    ,2: 'CSIRO-Mk3-6-0Q_rcp85'
-    }
-    
+  
   
 for i_model in dict_model:
     infile_model = dict_model[i_model]
+    print(f'===================================== {time.ctime()}')
     print(f'...Now starting compile for: {infile_model}')
     
     infile_form = (dir_Data + '*' + infile_model + ".csv") # defines the criteria that find all of one model's variables

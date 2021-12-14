@@ -54,7 +54,7 @@ dir_Out = (dir_Data + 'Compile/' )  # Specify folder to write compiled csvs to. 
 outfile_prefix = 'SILO-1985-2020' # string to be placed at the start of the export filename as [string].csv
 
 # =============================================================================
-#%% Script
+#%% Compile SILO data into single DF & export
 # =============================================================================
 
     
@@ -87,16 +87,12 @@ for i_var in dict_var: # Loops through each variable in use inputs
     
 # Loop is exited once all variables have been joined to df_1
 # df_export is saved to file as [time],[lat],[long],[var1],[var2], etc...   
-print(f'...Exporting {outfile_prefix}')     
-df_export.to_csv(outfile_name, index=False)
-print(f'Export complete: {outfile_name}')
+
+# print(f'...Exporting {outfile_prefix}')     
+# df_export.to_csv(outfile_name, index=False)
+# print(f'Export complete: {outfile_name}')
     
-
-
-
-
-
-
+del df_i
 
 
 
