@@ -146,8 +146,9 @@ df_cum_sum_E = []
 
 
 for f in range(0,len(infile_list)):
-    df_i_P = [] # reset the temp data lists
+    df_i_P = [] # reset the temp data and variables
     df_i_E = []
+
     print(f'===================================== {time.ctime()}')
     if f == 0:
         tic = time.time()
@@ -162,7 +163,7 @@ for f in range(0,len(infile_list)):
         print(f'... Done t ={toc}')
     else:
         tic = time.time()
-        print(f'Loading {f} of {len(infile_list)}')
+        print(f'Loading {f} of {len(infile_list)-1}')
         with open(infile_list[f]) as csvDataFile:
             csvReader = csv.reader(csvDataFile)
             next(csvReader)         # This skips the 1st row (header information)
@@ -174,13 +175,21 @@ for f in range(0,len(infile_list)):
         
 # TODO: loop through, df_export = df_i+df_export to calc a cumulative sum
 
-    print('Adding df_i to df_cum_sum...')
-    tic = time.time()
-    df_cum_sum_P = df_cum_sum_P + df_i_P # add new data to cumulative sum
-    df_cum_sum_E = df_cum_sum_E + df_i_E
-    toc = round(time.time() - tic,5)
-    print(f'... Done t ={toc}')
+        print('Adding df_i to df_cum_sum...')
+        tic = time.time()
+        zip_i_E = zip(df_cum_sum_E,df_i_E) # https://www.kite.com/python/answers/how-to-find-the-sum-of-two-lists-in-python
+        zip_i_P = zip(df_cum_sum_P,df_i_P)
         
+        df_cum_sum_E = [x + y for (x,y) in zip_i_E] # overwrite the df_cum_sum with the updated values
+        df_cum_sum_P = [x + y for (x,y) in zip_i_P]        
+        # df_cum_sum_P = df_cum_sum_P + df_i_P # add new data to cumulative sum
+        # df_cum_sum_E = df_cum_sum_E + df_i_E
+        
+        toc = round(time.time() - tic,5)
+        print(f'... Done t ={toc}')
+        
+        # del zip_i_E # delete the temp zipped items to save memory
+        # del zip_i_P
         
 # TODO: export df_export once all the grids have been added together
 
