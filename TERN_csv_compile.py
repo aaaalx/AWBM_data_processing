@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Dec 13 13:24:10 2021
+# """
+# Created on Mon Dec 13 13:24:10 2021
 
-@author: Alex.Xynias
+# @author: Alex.Xynias
 
-Compiles the TERN data for each model into its own csv with [time],[lat],[long],[var_1],[var_2], etc
+# Compiles the TERN data for each model into its own csv with [time],[lat],[long],[var_1],[var_2], etc
 
-"""
+# """
 # =============================================================================
 # Setup and notes
 # =============================================================================
@@ -36,7 +36,7 @@ import time
 
 # Input data information 
 # (must end in /)
-dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/TERN_downloads/'
+dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/TERN_testdata/'
 
 dict_model = {
     # RCP4.5
@@ -73,7 +73,11 @@ dict_var = {
     # ,4: 'tscr_ave' # daily mean temp
     }
 
-
+dict_var_col = { # variable name headers as they appear in the infile csvs
+    1: 'rnd24.daily'
+    ,2: 'epan_ave'
+    ,3: 'rnd24Adjust.daily'    
+    }
 
 # Outfile information (for naming)
 dir_Out = (dir_Data + 'Compile/' )  # Specify folder to write compiled csvs to. (must end in /)
@@ -82,58 +86,64 @@ outfile_prefix = 'Compile-'
 # =============================================================================
 #%% Script
 # =============================================================================
-infile_model = dict_model[1]
-infile_form = (dir_Data + "*.csv")
-# infile_form = (dir_Data + '*.ccam10_' + infile_model + ".csv") # defines the criteria that find all of one model's variables
-infile_list = glob.glob(infile_form) # generates the list of filepaths in dir_Data which match the infile_form criteria
+dict_model =  {
+    1: 'CSIRO-Mk3-6-0Q_rcp45'
+    ,2: 'CSIRO-Mk3-6-0Q_rcp85'
+    }
     
-# for i_model in dict_model:
-#     infile_model = dict_model[i_model]
-#     print(f' model = {infile_model}')
+  
+for i_model in dict_model:
+    infile_model = dict_model[i_model]
+    print(f'...Now starting compile for: {infile_model}')
     
-#     infile_form = (dir_Data + '*' + infile_model + ".csv") # defines the criteria that find all of one model's variables
-#     infile_list = glob.glob(infile_form) # generates the list of filepaths in dir_Data which match the infile_form criteria
+    infile_form = (dir_Data + '*' + infile_model + ".csv") # defines the criteria that find all of one model's variables
+    infile_list = glob.glob(infile_form) # generates the list of filepaths in dir_Data which match the infile_form criteria
+    
+    for i_var in dict_var: # Loops through each variable in use inputs
+        infile_var = dict_var[i_var]
+        infile_var_col = dict_var_col[i_var]
         
-#     for i_var in dict_var: # Loops through each variable in use inputs
-#         infile_var = dict_var[i_var]    
+        # Filter infile_list to only load data matching the infile_var
+        infile_path_var = glob.glob(dir_Data + infile_var_col + '*' + infile_model + '.csv')
         
-#         # Filter infile_list to only load data matching the infile_var
-        
-#         if i_var == 1: # define the case for the first df setup
-#             print(f'i_var = {i_var}')
-#             print(f'Setting up dataframe for first var: {infile_var}')
-#             print(f'Reading data for {infile_var}...')
+        if i_var == 1: # define the case for the first df setup
+            print(f'i_var = {i_var}')
+            print(f'Setting up dataframe for first var: {infile_var}')
+            print(f'Reading data for {infile_var}...')
             
-#             df_export = pd.concat([pd.read_csv(f) for f in infile_list]) # https://stackoverflow.com/a/40665364
+            df_export = pd.concat([pd.read_csv(infile_path_var[0])])
              
-#             print(f'Finished concat for {infile_var}...')
+            print(f'Finished concat for {infile_var}...')
             
-#         else: # for all subsequent variables, append the variable as a new column to df_export
-#             print(f'i_var = {i_var}')
-#             print(f'Reading data for next var: {infile_var}...')
-#             df_i = pd.concat([pd.read_csv(f) for f in infile_list])
-#             print('Joining new data in df_i to df_export')
-#             df_i = df_i[infile_var] # crop the repeated columns (time,lat,long) from the df
+        else: # for all subsequent variables, append the variable as a new column to df_export
+            print(f'i_var = {i_var}')
+            print(f'Reading data for next var: {infile_var}...')
             
-#             df_export = pd.concat([df_export,df_i],axis = 1) # axis = 1 for col
-#             print(f'Finished concat for {infile_var}...')
+            
+            df_i = pd.concat([pd.read_csv(infile_path_var[0])])
+            print('Joining new data in df_i to df_export')
+            df_i = df_i[infile_var_col] # crop the repeated columns (time,lat,long) from the df
+            # df_i = df_i[::-1]
+            
+            df_export = pd.concat([df_export,df_i],axis = 1) # axis = 1 for col
+            print(f'Finished concat for {infile_var}...')
     
     
   
     
-#     # Loop is exited once all variables have been joined to df_1
-#     # df_export is saved to file as [time],[lat],[long],[var1],[var2], etc...
+    # Loop is exited once all variables have been joined to df_1
+    # df_export is saved to file as [time],[lat],[long],[var1],[var2], etc...
     
-#     outfile_dir = (dir_Out + outfile_prefix + infile_model + '.csv')
-#     print(f'...Exporting {outfile_dir}')     
-#     # df_export.to_csv(outfile_dir, index=False)
-#     print(f'Export complete: {outfile_dir}')
+    outfile_dir = (dir_Out + outfile_prefix + infile_model + '.csv')
+    print(f'...Exporting {infile_model}')   
+    df_export.to_csv(outfile_dir, index=False)
+    print(f'Export complete: {outfile_dir}')
     
-#     # clear loaded dataframes after export
-#     del df_export, df_i 
+    # clear loaded dataframes after export
+    del df_export, df_i 
     
 
-# print('Export for all models and variables')
+print('Export for all models and variables')
 
 
 
