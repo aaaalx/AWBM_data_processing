@@ -132,13 +132,56 @@ for g in range(0,len(XY_in)): # for each grid defined by 'dir_vor'...
 #%% Sum the exported csvs
 # =============================================================================
 # End goal: sum the factored (and exported) csvs into finished AWBM-calibration.py input file
+import glob
 
-# TODO: generate glob list of input files
+# Generate list of input files
+infile_form = (dir_Out + outfile_prefix + "*.csv") # form/pattern for the input csv file path
+infile_list = glob.glob(infile_form) # generates the list of filepaths in dir_Data which match the infile_form criteria
 
 # TODO: load first input file to df_export
 
+df_cum_sum_P = []
+df_cum_sum_E = []
+
+
+
+for f in range(0,len(infile_list)):
+    df_i_P = [] # reset the temp data lists
+    df_i_E = []
+    print(f'===================================== {time.ctime()}')
+    if f == 0:
+        tic = time.time()
+        print('Loading first grid and populating df_cum_sum lists')
+        with open(infile_list[f]) as csvDataFile:
+            csvReader = csv.reader(csvDataFile)
+            next(csvReader)         # This skips the 1st row (header information)
+            for row in csvReader:
+                df_cum_sum_P.append(row[2])
+                df_cum_sum_E.append(row[3])
+        toc = round(time.time() - tic,5)
+        print(f'... Done t ={toc}')
+    else:
+        tic = time.time()
+        print(f'Loading {f} of {len(infile_list)}')
+        with open(infile_list[f]) as csvDataFile:
+            csvReader = csv.reader(csvDataFile)
+            next(csvReader)         # This skips the 1st row (header information)
+            for row in csvReader:
+                df_i_P.append(row[2])
+                df_i_E.append(row[3])
+        toc = round(time.time() - tic,5)
+        print(f'... Done t ={toc}')
+        
 # TODO: loop through, df_export = df_i+df_export to calc a cumulative sum
 
+    print('Adding df_i to df_cum_sum...')
+    tic = time.time()
+    df_cum_sum_P = df_cum_sum_P + df_i_P # add new data to cumulative sum
+    df_cum_sum_E = df_cum_sum_E + df_i_E
+    toc = round(time.time() - tic,5)
+    print(f'... Done t ={toc}')
+        
+        
 # TODO: export df_export once all the grids have been added together
 
 
