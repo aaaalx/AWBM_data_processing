@@ -27,7 +27,7 @@ dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downlo
 
 dir_vor = dir_voronoi_gregors # choose which catchment to calculate proportions with
 outfile_prefix = 'SILO_Gregors_1985-2020_' # [outfile_prefix][X_Y].csv
-dir_Out = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/grids_test/'
+dir_Out = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/grids/'
 
 
 # =============================================================================
@@ -75,10 +75,13 @@ E = np.array(E_in)
 E[E==''] = 0               
 #E[E==''] = np.nan                   # Alternative scripting to convert to NaN
 E=[float(x) for x in E]
+del E_in
+del P_in
+
 
 tic = time.time()
 # Creating dataframe after variables have been loaded
-print('Creating df...')
+print('Creating df_in wait ~30min... {time.ctime()}')
 data_in = [Date_in,LatLon_in,P,E,]
 index = ['Date','X_Y','P', 'E']
 df_in = pd.DataFrame(data_in,index=index).T
@@ -144,7 +147,7 @@ df_cum_sum_P = []
 df_cum_sum_E = []
 
 
-
+#%%
 for f in range(0,len(infile_list)):
     df_i_P = [] # reset the temp data and variables
     df_i_E = []
@@ -161,9 +164,11 @@ for f in range(0,len(infile_list)):
                 df_cum_sum_E.append(row[3])
         toc = round(time.time() - tic,5)
         print(f'... Done t ={toc}')
+
+        print('############# df_cum_sums reset')
     else:
         tic = time.time()
-        print(f'Loading {f} of {len(infile_list)-1}')
+        print(f'Loading {f} of {len(infile_list)-1} : {infile_list[f][(len(dir_Out + outfile_prefix)):]}')
         with open(infile_list[f]) as csvDataFile:
             csvReader = csv.reader(csvDataFile)
             next(csvReader)         # This skips the 1st row (header information)
@@ -174,9 +179,30 @@ for f in range(0,len(infile_list)):
         print(f'... Done t ={toc}')
         
 # TODO: loop through, df_export = df_i+df_export to calc a cumulative sum
+    # seems to be an error in the grid csv creation leading to empty csvs for 
+    # grids without decimal points (i.e. all cells with -27.0 and 152.0), 27 total grids with errors
+        # this error didn't seem to be the case for the first test (prefix = SILO_Gregors_[X_Y])
 
-        print('Adding df_i to df_cum_sum...')
+        print('Converting dfs to float...')
         tic = time.time()
+
+        if isinstance(df_cum_sum_E[0], str) == True: # if the first value in E is a string, convert all cum_sum to floats
+            df_cum_sum_E = [eval(x) for x in df_i_E]
+            df_cum_sum_P = [eval(x) for x in df_i_P]
+        df_i_P = [eval(x) for x in df_i_P]
+        df_i_E = [eval(x) for x in df_i_E]
+
+        # map(float, df_i_P)
+        # map(float, df_i_E)
+        # map(float, df_cum_sum_E)
+        # map(float, df_cum_sum_P)
+        
+        toc = round(time.time() - tic,5)
+        
+        print(f'... Done t ={toc}')
+        
+        tic = time.time()
+        print('Adding df_i to df_cum_sum')
         zip_i_E = zip(df_cum_sum_E,df_i_E) # https://www.kite.com/python/answers/how-to-find-the-sum-of-two-lists-in-python
         zip_i_P = zip(df_cum_sum_P,df_i_P)
         
@@ -187,7 +213,8 @@ for f in range(0,len(infile_list)):
         
         toc = round(time.time() - tic,5)
         print(f'... Done t ={toc}')
-        
+        print('=== Pausing script 10 seconds ===')
+        time.sleep(10) # pauses for 5 seconds before starting the loop again for debugging purposes
         # del zip_i_E # delete the temp zipped items to save memory
         # del zip_i_P
         
@@ -196,7 +223,8 @@ for f in range(0,len(infile_list)):
 
     
 
-
+#%%
+print('fin')
 
 
 
