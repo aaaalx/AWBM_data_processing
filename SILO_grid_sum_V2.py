@@ -38,13 +38,14 @@ import csv
 dir_voronoi_gregors = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data_processing/Voronoi_SILO_gregors.csv'
 dir_voronoi_full = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data_processing/Voronoi_SILO_fullcatchment.csv'
 # dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-2020.csv' # full data
-# dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-1985.csv' # excel cropped one year
+# dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-1985.csv' # excel cropped, first few days of 1985
 # dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-1989-09-18.csv' # excel crop all rows supported in excel
-dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-1985-V2.csv' # "SILO_csv_compile.py" cropped one year
+# dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-1985-V2.csv' # "SILO_csv_compile.py" cropped one year
+dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-1985-V1.csv' # Excel cropped one year
 
 dir_vor = dir_voronoi_gregors # choose which catchment to calculate proportions with
 outfile_prefix = 'SILO_Gregors_1985-1985-V2_' # [outfile_prefix][X_Y].csv
-dir_Out = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/grids_test_5/'
+dir_Out = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/grids_test_6/'
 dir_Log = (dir_Out + 'log.txt') # where to write the log file for grid errors
 
 outfile_compile = 'SILO_Gregors_1985-1985_testcompile.csv' # filename to write end product to
