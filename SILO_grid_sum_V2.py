@@ -29,22 +29,25 @@ import time
 import csv
 
 
+
+
 # =============================================================================
 # %% User input
 # =============================================================================
 
 dir_voronoi_gregors = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data_processing/Voronoi_SILO_gregors.csv'
 dir_voronoi_full = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data_processing/Voronoi_SILO_fullcatchment.csv'
-# dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-2020.csv'
-# dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-1985.csv'
-# dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-1989-09-18.csv'
-
+# dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-2020.csv' # full data
+# dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-1985.csv' # excel cropped one year
+# dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-1989-09-18.csv' # excel crop all rows supported in excel
+dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-1985-V2.csv' # "SILO_csv_compile.py" cropped one year
 
 dir_vor = dir_voronoi_gregors # choose which catchment to calculate proportions with
-outfile_prefix = 'SILO_Gregors_1985-1989_' # [outfile_prefix][X_Y].csv
-dir_Out = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/grids_test_4/'
+outfile_prefix = 'SILO_Gregors_1985-1985-V2_' # [outfile_prefix][X_Y].csv
+dir_Out = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/grids_test_5/'
+dir_Log = (dir_Out + 'log.txt') # where to write the log file for grid errors
 
-outfile_compile = 'SILO_Gregors_1985-1989_testcompile.csv' # filename to write end product to
+outfile_compile = 'SILO_Gregors_1985-1985_testcompile.csv' # filename to write end product to
 
 # =============================================================================
 #%% Loading data: v1
@@ -65,6 +68,12 @@ E_in = [] # et_morton_actual
 # Lat_in = [] # [x]
 # Lon_in = [] # [y]
 LatLon_in = [] # String of "[x]_[y]"
+
+# reset error log file
+with open(dir_Log, 'w') as log:
+    log.write(f'Grid errors for run at: {time.ctime()}')
+    log.write('\n')
+
 
 print('Loading input data...')
 with open(dir_Data) as csvDataFile:
@@ -147,8 +156,12 @@ for g in range(0,len(XY_in)): # for each grid defined by 'dir_vor'...
     try:
         test_g = df_crop_g['Date'].iloc[0] # tests if the first day has loaded
     except:
-        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-        break # ends loop if not
+        print(f'@@@@@@@@@@ Error for: {XY_in[g]}')
+        with open(dir_Log, 'a') as log:
+            log.write(f'{XY_in[g]}')
+            log.write('\n')
+        # input("Press Enter to continue with script...")
+        # break # ends loop if not
 
     tic = time.time()
     outfile_path = (dir_Out + outfile_prefix + XY_in[g] + '.csv')
