@@ -51,11 +51,11 @@ dict_var = { # comment out the variables you don't want, add any others that are
 
 # Outfile information (for naming)
 dir_Out = (dir_Data + 'Compile/' )  # Specify folder to write compiled csvs to. (must end in /)
-outfile_prefix = 'SILO-1985-1985-V2' # string to be placed at the start of the export filename as [string].csv
-year_select = '1985' # '*' for all years in the dir_Data folder, or '1985' etc as string
+outfile_prefix = 'SILO-1985-1985-V3' # string to be placed at the start of the export filename as [string].csv
+year_select = '1985' # '*' for all years in the dir_Data folder, or specify with '1985' etc as string
 
 # =============================================================================
-#%% Compile SILO data into single DF & export
+#%% Compile SILO data into single DF
 # =============================================================================
 
     
@@ -83,8 +83,17 @@ for i_var in dict_var: # Loops through each variable in use inputs
         df_export = pd.concat([df_export,df_i],axis = 1)
         print(f'Finished concat for {infile_var}...')
     
-    
+# =============================================================================
+#%% update formatting of df_export 
+# =============================================================================
+# Trying to fix an error encountered with the SILO_grid_sum script that doesn't seem to occur when using the same data exported via excel
+
+# Rounding all
+
   
+# =============================================================================
+#%% save df_export to file
+# =============================================================================
     
 # Loop is exited once all variables have been joined to df_1
 # df_export is saved to file as [time],[lat],[long],[var1],[var2], etc...   

@@ -37,18 +37,18 @@ import csv
 
 dir_voronoi_gregors = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data_processing/Voronoi_SILO_gregors.csv'
 dir_voronoi_full = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data_processing/Voronoi_SILO_fullcatchment.csv'
-# dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-2020.csv' # full data
+dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-2020.csv' # full data from "SILO_csv_compile.py"
 # dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-1985.csv' # excel cropped, first few days of 1985
 # dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-1989-09-18.csv' # excel crop all rows supported in excel
 # dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-1985-V2.csv' # "SILO_csv_compile.py" cropped one year
-dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-1985-V1.csv' # Excel cropped one year
+# dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-1985-V1.csv' # Excel cropped one year
 
-dir_vor = dir_voronoi_gregors # choose which catchment to calculate proportions with
-outfile_prefix = 'SILO_Gregors_1985-1985-V2_' # [outfile_prefix][X_Y].csv
-dir_Out = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/grids_test_6/'
+dir_vor = dir_voronoi_full # choose which catchment to calculate proportions with
+outfile_prefix = 'SILO_Gregors_1985-2020_' # [outfile_prefix][X_Y].csv
+dir_Out = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/grids/'
 dir_Log = (dir_Out + 'log.txt') # where to write the log file for grid errors
 
-outfile_compile = 'SILO_Gregors_1985-1985_testcompile.csv' # filename to write end product to
+outfile_compile = 'SILO_Full_1985-2020.csv' # filename to write end product to
 
 # =============================================================================
 #%% Loading data: v1
@@ -129,15 +129,22 @@ with open(dir_vor) as csvDataFile: # opens the QGIS-calculated grid data
     csvReader = csv.reader(csvDataFile)
     next(csvReader)         # This skips the 1st row (header information)
     for row in csvReader:
-        XY_in.append(row[5])
+        XY_in.append(row[1]+'_'+row[2]) # this version makes "X_Y" itself, should solve issue (?)
+        # XY_in.append(row[5]) # this version uses the excel generated "X_Y" which for some reasons rounds the numbers before concat ????, was the source of the error.
         Prop_in.append(row[4])
 toc = round(time.time() - tic,5)   
 print(f'...Grid data loaded t={toc}')
+
+
 
 Prop=[float(x) for x in Prop_in] 
 dict_prop = dict(zip(XY_in,Prop)) # creates the dictionary to assign each cell (X_Y) a "prop" factor
 print('dict_prop ready...')
 
+
+# input("Press Enter to continue with script...")
+
+#%%
 for g in range(0,len(XY_in)): # for each grid defined by 'dir_vor'...
 # for g in range(0,3): # for each grid defined by 'dir_vor'...
     tic = time.time()
@@ -205,7 +212,6 @@ for f in range(0,len(infile_list)):
         toc = round(time.time() - tic,5)
         print(f'... Done t ={toc}')
 
-        print('############# df_cum_sums reset')
     else:
         tic = time.time()
         print(f'Loading {f} of {len(infile_list)-1} : {infile_list[f][(len(dir_Out + outfile_prefix)):]}')
@@ -279,8 +285,8 @@ df_out = pd.DataFrame(data_in,index=index).T
 toc_df_out = round(time.time() - tic,5)           
 print(f'...df_out ready t={toc_df_out}')
 
-outfile_compile_path = (dir_Out+outfile_compile)
-print(f'...Exporting {outfile_compile}')     
+outfile_compile_path = (dir_Out[:-6]+outfile_compile) # -6 to cut "grids/" from the dir_Out and save to main folder
+print(f'...Exporting {outfile_compile}')
 df_out.to_csv(outfile_compile_path, index=False)
 print(f'Export complete: {outfile_compile}')
 
