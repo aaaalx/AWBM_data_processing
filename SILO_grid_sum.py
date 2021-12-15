@@ -22,13 +22,15 @@ import csv
 
 dir_voronoi_gregors = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data_processing/Voronoi_SILO_gregors.csv'
 dir_voronoi_full = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data_processing/Voronoi_SILO_fullcatchment.csv'
-dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-2020.csv'
+# dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-2020.csv'
 # dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-1985.csv'
+dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-1989-09-18.csv'
 
 dir_vor = dir_voronoi_gregors # choose which catchment to calculate proportions with
-outfile_prefix = 'SILO_Gregors_1985-2020_' # [outfile_prefix][X_Y].csv
-dir_Out = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/grids/'
+outfile_prefix = 'SILO_Gregors_1985-1989_' # [outfile_prefix][X_Y].csv
+dir_Out = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/grids_test_4/'
 
+outfile_compile = 'SILO_Gregors_1985-1989_testcompile.csv' # filename to write end product to
 
 # =============================================================================
 #%% Loading data: v1
@@ -65,6 +67,8 @@ with open(dir_Data) as csvDataFile:
 toc_csv = round(time.time() - tic,5)
 print(f'...Data loaded t={toc_csv}')  
 
+print('Converting to floats...')
+tic = time.time()
 # Formatting or unit conversion
 P = np.array(P_in)
 P[P==''] = 0               
@@ -77,16 +81,17 @@ E[E==''] = 0
 E=[float(x) for x in E]
 del E_in
 del P_in
-
+toc = round(time.time() - tic,5)
+print(f'... Done t={toc}')
 
 tic = time.time()
 # Creating dataframe after variables have been loaded
-print('Creating df_in wait ~30min... {time.ctime()}')
+print(f'Creating df_in, wait ~5min... {time.ctime()}')
 data_in = [Date_in,LatLon_in,P,E,]
 index = ['Date','X_Y','P', 'E']
 df_in = pd.DataFrame(data_in,index=index).T
-toc = round(time.time() - tic,5)           
-print(f'...df_in ready t={toc}')
+toc_df = round(time.time() - tic,5)           
+print(f'...df_in ready t={toc_df}')
 
 # =============================================================================
 #%% Create filter arrays for each grid cell
@@ -110,7 +115,9 @@ dict_prop = dict(zip(XY_in,Prop)) # creates the dictionary to assign each cell (
 print('dict_prop ready...')
 
 for g in range(0,len(XY_in)): # for each grid defined by 'dir_vor'...
+# for g in range(0,3): # for each grid defined by 'dir_vor'...
     tic = time.time()
+
     print(f'Starting {g} of {len(XY_in)}...')
     filter_df = (df_in['X_Y'] == XY_in[g]) # filter array to only index grids "g" in quesiton
     df_crop_g = df_in[filter_df] # use filter array to crop df_in to only include rows relating to that grid
@@ -122,6 +129,13 @@ for g in range(0,len(XY_in)): # for each grid defined by 'dir_vor'...
     toc = round(time.time() - tic,5)
     print(f'... df_crop_g updated t={toc}')
     
+
+    try:
+        test_g = df_crop_g['Date'].iloc[0] # tests if the first day has loaded
+    except:
+        print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+        break # ends loop if not
+
     tic = time.time()
     outfile_path = (dir_Out + outfile_prefix + XY_in[g] + '.csv')
     print(f'Writing {outfile_prefix+XY_in[g]} to file...')
@@ -146,8 +160,6 @@ infile_list = glob.glob(infile_form) # generates the list of filepaths in dir_Da
 df_cum_sum_P = []
 df_cum_sum_E = []
 
-
-#%%
 for f in range(0,len(infile_list)):
     df_i_P = [] # reset the temp data and variables
     df_i_E = []
@@ -213,18 +225,39 @@ for f in range(0,len(infile_list)):
         
         toc = round(time.time() - tic,5)
         print(f'... Done t ={toc}')
-        print('=== Pausing script 10 seconds ===')
-        time.sleep(10) # pauses for 5 seconds before starting the loop again for debugging purposes
+        # print('=== Pausing script 10 seconds ===')
+        # time.sleep(10) # pauses for x seconds before starting the loop again for debugging purposes
         # del zip_i_E # delete the temp zipped items to save memory
         # del zip_i_P
         
-# TODO: export df_export once all the grids have been added together
-
+# TODO: clear other objects from memory (only need to keep Date_in, cumsum for P and E)
+# del filter_df
+# del df_in
+# del df_crop_g
+# del LatLon_in
 
     
 
-#%%
-print('fin')
+#%% Export to file
+
+# TODO: export df_export once all the grids have been added together
+
+tic = time.time()
+# Creating dataframe for export
+print(f'Creating df_out, wait ~5min... {time.ctime()}')
+data_in = [Date_in,df_cum_sum_P,df_cum_sum_E]
+index = ['Date','P[mm]', 'E[mm?]',]
+df_out = pd.DataFrame(data_in,index=index).T
+toc_df_out = round(time.time() - tic,5)           
+print(f'...df_out ready t={toc_df_out}')
+
+outfile_compile_path = (dir_Out+outfile_compile)
+print(f'...Exporting {outfile_compile}')     
+df_out.to_csv(outfile_compile_path, index=False)
+print(f'Export complete: {outfile_compile}')
+
+
+print(f'fin ======= {time.ctime()}')
 
 
 

@@ -88,9 +88,9 @@ for i_var in dict_var: # Loops through each variable in use inputs
 # Loop is exited once all variables have been joined to df_1
 # df_export is saved to file as [time],[lat],[long],[var1],[var2], etc...   
 
-# print(f'...Exporting {outfile_prefix}')     
-# df_export.to_csv(outfile_name, index=False)
-# print(f'Export complete: {outfile_name}')
+print(f'...Exporting {outfile_prefix}')     
+df_export.to_csv(outfile_name, index=False)
+print(f'Export complete: {outfile_name}')
     
 del df_i
 
