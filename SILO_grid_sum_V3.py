@@ -4,16 +4,9 @@ Created on Wed Dec 15 13:53:11 2021
 
 @author: Alex
 
-V2 of the script aims to grid_sum each SILO [year].[var].csv and concat/compile at the end,
-rather than trying to grid_sum entire compiled 400mb "SILO-1985-2020.csv" at once.
-
-The filter array seems to encounter issues with matching the "LatLon_in" string's to the dict_prop
-for any grids with the key "*,-27" and "152,*". I suppose it has to be related to those strings being shorter,
-but the error never seemed to occur when processing any trimmed csv saved by excel.
-
-Hopefully it's not some formatting /encoding thing excel is fixing behind the scenes,
-but I can test the existing V1 script with input data that excel hasn't touched ([year].[variable].csv)
-before starting to implement any other loops.
+Code still very messy, but working a lot better now
+probably won't update it beyond this point untill I need to use the 
+script again for the TERN data
 
 
 """
@@ -150,17 +143,17 @@ infile_list = glob.glob(infile_form)
 df_cum_sum_P = []
 df_cum_sum_E = []
 
-day1check_P = []
-day1check_E = []
+# day1check_P = []
+# day1check_E = []
 
-day2check_P = []
-day2check_E = []
+# day2check_P = []
+# day2check_E = []
 
-day1check_sum_P = []
-day2check_sum_P = []
+# day1check_sum_P = []
+# day2check_sum_P = []
 
-day1check_sum_E = []
-day2check_sum_E = []
+# day1check_sum_E = []
+# day2check_sum_E = []
 
 for f in range(0, len(infile_list)):
     df_i_P = []  # reset the temp data and variables
@@ -209,17 +202,17 @@ for f in range(0, len(infile_list)):
 
         # input("Press Enter to continue with script...")
 
-        day1check_P.append(df_i_P[0])
-        day1check_E.append(df_i_E[0])
+        # day1check_P.append(df_i_P[0])
+        # day1check_E.append(df_i_E[0])
 
-        day2check_P.append(df_i_P[1])
-        day2check_E.append(df_i_E[1])
+        # day2check_P.append(df_i_P[1])
+        # day2check_E.append(df_i_E[1])
 
-        day1check_sum_E.append(df_cum_sum_E[0])
-        day2check_sum_E.append(df_cum_sum_E[1])
+        # day1check_sum_E.append(df_cum_sum_E[0])
+        # day2check_sum_E.append(df_cum_sum_E[1])
 
-        day1check_sum_P.append(df_cum_sum_P[0])
-        day2check_sum_P.append(df_cum_sum_P[1])
+        # day1check_sum_P.append(df_cum_sum_P[0])
+        # day2check_sum_P.append(df_cum_sum_P[1])
 
         toc = round(time.time() - tic, 5)
 
@@ -263,15 +256,9 @@ for f in range(0, len(infile_list)):
 #%% Creating new date list 
 # (https://stackoverflow.com/questions/59882714/python-generating-a-list-of-dates-between-two-dates)
 
-
-
-
 new_dates = pd.date_range(start_date,end_date,freq='D')
 
 Date_out = new_dates.tolist()
-
-
-
 
 #%%
 
