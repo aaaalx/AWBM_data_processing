@@ -43,12 +43,12 @@ dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downlo
 # dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-1985-V2.csv' # "SILO_csv_compile.py" cropped one year
 # dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-1985-V1.csv' # Excel cropped one year
 
-dir_vor = dir_voronoi_full # choose which catchment to calculate proportions with
-outfile_prefix = 'SILO_Gregors_1985-2020_' # [outfile_prefix][X_Y].csv
-dir_Out = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/grids/'
+dir_vor = dir_voronoi_gregors # choose which catchment to calculate proportions with
+dir_Out = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/grids_Gregors/'
 dir_Log = (dir_Out + 'log.txt') # where to write the log file for grid errors
 
-outfile_compile = 'SILO_Full_1985-2020.csv' # filename to write end product to
+outfile_prefix = 'SILO_Full_1985-2020_' # [outfile_prefix][X_Y].csv
+outfile_compile = 'SILO_Gregors_1985-2020.csv' # filename to write end product to
 
 # =============================================================================
 #%% Loading data: v1
@@ -195,6 +195,18 @@ infile_list = glob.glob(infile_form) # generates the list of filepaths in dir_Da
 df_cum_sum_P = []
 df_cum_sum_E = []
 
+day1check_P = []
+day1check_E = []
+
+day2check_P = []
+day2check_E = []
+
+day1check_sum_P = []
+day2check_sum_P = []
+
+day1check_sum_E = []
+day2check_sum_E = []
+
 for f in range(0,len(infile_list)):
     df_i_P = [] # reset the temp data and variables
     df_i_E = []
@@ -238,10 +250,21 @@ for f in range(0,len(infile_list)):
         df_i_P = [eval(x) for x in df_i_P]
         df_i_E = [eval(x) for x in df_i_E]
 
-        # map(float, df_i_P)
-        # map(float, df_i_E)
-        # map(float, df_cum_sum_E)
-        # map(float, df_cum_sum_P)
+        # input("Press Enter to continue with script...")
+
+        day1check_P.append(df_i_P[0])
+        day1check_E.append(df_i_E[0])
+        
+        day2check_P.append(df_i_P[1])
+        day2check_E.append(df_i_E[1])
+        
+        day1check_sum_E.append(df_cum_sum_E[0])
+        day2check_sum_E.append(df_cum_sum_E[1])
+        
+        day1check_sum_P.append(df_cum_sum_P[0])
+        day2check_sum_P.append(df_cum_sum_P[1])
+        
+        
         
         toc = round(time.time() - tic,5)
         
@@ -265,12 +288,21 @@ for f in range(0,len(infile_list)):
         # del zip_i_P
         
 # TODO: clear other objects from memory (only need to keep Date_in, cumsum for P and E)
-# del filter_df
-# del df_in
-# del df_crop_g
-# del LatLon_in
+del filter_df
+del df_in
+del df_crop_g
+del LatLon_in
 
-    
+#%% export check data
+check_data_in = [day1check_E,day1check_sum_E,day1check_P,day1check_sum_P,
+                 day2check_E,day2check_sum_E,day2check_P,day2check_sum_P]
+index = ['day1check_E','day1check_sum_E','day1check_P','day1check_sum_P',
+        'day2check_E','day2check_sum_E','day2check_P','day2check_sum_P']
+df_check_out = pd.DataFrame(check_data_in,index=index).T
+df_check_out.to_csv('datacheck_gregors.csv', index=False)
+
+
+
 
 #%% Export to file
 
