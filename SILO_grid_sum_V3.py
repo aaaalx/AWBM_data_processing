@@ -273,7 +273,7 @@ toc_df_out = round(time.time() - tic, 5)
 print(f'...df_out ready t={toc_df_out}')
 
 # -6 to cut "grids/" from the dir_Out and save to main folder
-outfile_compile_path = (dir_Out[:-14]+outfile_compile)
+outfile_compile_path = (dir_Out[:-6]+outfile_compile)
 print(f'...Exporting {outfile_compile}')
 df_out.to_csv(outfile_compile_path, index=False)
 print(f'Export complete: {outfile_compile}')
