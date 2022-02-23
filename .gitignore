@@ -1,1 +1,11 @@
 examples\
+examples/grouping_without_itt.py
+examples/heatmaps.py
+examples/plotting_donnie.py
+examples/RainfallAnalysisExample-BlackbuttPostOffice/40020.txt
+examples/RainfallAnalysisExample-BlackbuttPostOffice/Blackbutt-PostOffice-40020.csv
+examples/RainfallAnalysisExample-BlackbuttPostOffice/Output-DryEvents-Blackbutt-SILO.csv
+examples/RainfallAnalysisExample-BlackbuttPostOffice/Output-DryEvents-SILO_Gregors_1985-2020.csv
+examples/RainfallAnalysisExample-BlackbuttPostOffice/Output-RainfallEvents-Blackbutt-SILO.csv
+examples/RainfallAnalysisExample-BlackbuttPostOffice/Output-RainfallEvents-SILO_Gregors_1985-2020.csv
+examples/RainfallAnalysisExample-BlackbuttPostOffice/RainfallAnalysis.py

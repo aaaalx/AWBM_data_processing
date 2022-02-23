@@ -4,38 +4,35 @@ Created on Tue Dec 21 14:43:52 2021
 
 @author: Alex.Xynias
 """
-
-# =============================================================================
-#%% Import Packages 
-# =============================================================================
 import pandas as pd
 import numpy as np
 import time
-
-
 
 # =============================================================================
 #%% User inputs
 # =============================================================================
 # Location of Rainfall data .csv
+    # Script is expecting precip data under the header "P[mm]" and evap under "E[mm]"
 
-dir_Data = 'D:/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO_Gregors_1985-2020-pd.csv'
-# dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO_Gregors_1985-2020-pd.csv' 
-data_name = 'SILO_Gregors_' # for outpile file naming
+# dir_Data = 'D:/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO_Gregors_1985-2020-pd.csv'
+dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO_Gregors_1985-2020-pd.csv' 
+data_name = 'SILO_Gregors_' # Data source / location for outpile file naming
 
 # dir_Data = 'D:/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO_Full_1985-2020-pd.csv'
 # dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO_Full_1985-2020-pd.csv'
 # data_name = 'SILO_Full_' # for outpile file naming
 
 
-dir_Export = 'D:/OneDrive/Documents/Uni/Honours Thesis/Data_processing/EventAnalysis/'
-# dir_Export = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data_processing/EventAnalysisPlots/'
+# dir_Export = 'D:/OneDrive/Documents/Uni/Honours Thesis/Data_processing/EventAnalysis/'
+dir_Export = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data_processing/EventAnalysis/'
 
-Thresh = float(0) # Rainfall threshold [mm]
-n_events = 50 # longest n events to export
+Thresh = float(0) # Rainfall threshold, minimum amount of rain which defines a "wet" day [mm]
+n_events = 50 # longest n events to export 
+    # TODO: Maybe have this input be a minimum duration of the event in interest.
+
 
 # Optional trimming of input data to range of dates
-ApplyTrim = False
+ApplyTrim = False # Use True/False or bool(1)/bool(0)
 date_start = pd.to_datetime('2000-1-1', format='%Y-%m-%d')
 date_end = pd.to_datetime('2020-12-31', format='%Y-%m-%d')
 
@@ -43,7 +40,7 @@ SkipPlots = True # optional skip of plotting section
 
 print('User inputs set...')
 # =============================================================================
-#%% Setup 
+#%% Other Setup 
 # =============================================================================
 
 if ApplyTrim == True: # set the prefix for output files
@@ -51,7 +48,7 @@ if ApplyTrim == True: # set the prefix for output files
 else:
     project_name = (data_name + '1985-2020_') 
 
-# input(f'Enter to continue for {project_name} with trim = {ApplyTrim}...')
+input(f'Enter to continue for {project_name} with trim = {ApplyTrim}...')
 # =============================================================================
 #%% Setting up dataframes 
 # =============================================================================
@@ -59,7 +56,7 @@ tic_script = time.time()
 # Loading input data & df
 df_in = pd.read_csv(dir_Data)
 df_in['Date'] = pd.to_datetime(df_in['Date'], dayfirst=True) # fix input date formatting
-df_in = df_in.set_index('Date') # sets the date column as the index 
+df_in = df_in.set_index('Date') # sets the date column as the dataframe index 
 
 if ApplyTrim == True:
     print(f'Trimming input data between {str(date_start)[:-9]} : {str(date_end)[:-9]}') #-9 to remove time of day info
@@ -120,20 +117,15 @@ df_cat['CurrentlyDry'] = df_cat['P[mm]'].apply(lambda x: int(1) if x <= Thresh e
 df_cat['CurrentlyWet'] = df_cat['P[mm]'].apply(lambda x: int(1) if x > Thresh else int(0))
                         # if today is  wet (P>Threshold): True, else False      
 
-
-
 # Group the events and count duration: https://stackoverflow.com/questions/27626542/counting-consecutive-positive-values-in-python-pandas-array
 df_cat['Dry_net_streak'] = df_cat['CurrentlyDry_net'] * (df_cat['CurrentlyDry_net'].groupby((df_cat['CurrentlyDry_net'] != df_cat['CurrentlyDry_net'].shift()).cumsum()).cumcount() + 0)
 df_cat['Wet_net_streak'] = df_cat['CurrentlyWet_net'] * (df_cat['CurrentlyWet_net'].groupby((df_cat['CurrentlyWet_net'] != df_cat['CurrentlyWet_net'].shift()).cumsum()).cumcount() + 0)
 df_cat['Wet_streak'] = df_cat['CurrentlyWet'] * (df_cat['CurrentlyWet'].groupby((df_cat['CurrentlyWet'] != df_cat['CurrentlyWet'].shift()).cumsum()).cumcount() + 0)
 df_cat['Dry_streak'] = df_cat['CurrentlyDry'] * (df_cat['CurrentlyDry'].groupby((df_cat['CurrentlyDry'] != df_cat['CurrentlyDry'].shift()).cumsum()).cumcount() + 0)
-    # the +1 is really just for when you want to doa human style count vs a 0th start count
+    # the +1 is really just for when you want to do a human style count vs a 0th start count for the event durations
 
 toc_script = time.time() - tic_script 
 print(f'... Categorisation complete : {toc_script}')
-
-
-
 
 # =============================================================================
 #%% Export suitable simulation start dates
@@ -203,7 +195,6 @@ if SkipPlots == False:
                      ,bbox_inches="tight"
                      )
     
-    
     calenderplot(df_cat,'Dry_net_streak',title='Dry net streak', cmap = 'YlOrRd')
     calenderplot(df_cat,'Wet_net_streak',title='Wet net streak',cmap = 'Blues')
 
@@ -234,7 +225,6 @@ if SkipPlots == False:
                      ,bbox_inches="tight"
                      )
         
-    
     ts_plot(df_cat['Wet_streak'], y_label="Wet Streak [days]",title="Wet Periods",color="xkcd:azure")
     ts_plot(df_cat['Wet_net_streak'], y_label="Net Wet Streak [days]",title="Net Wet Periods",color="xkcd:azure")
     
