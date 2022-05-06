@@ -26,17 +26,19 @@ tic = time.time() # starts the run time timer
 
 # dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/'
 # dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/TERN_downloads/'
-dir_Data = 'C:/Users/alex.xynias/OneDrive - Water Technology Pty Ltd/UQ/Thesis/Data/SILO_downloads'
+# dir_Data = 'C:/Users/alex.xynias/OneDrive - Water Technology Pty Ltd/UQ/Thesis/Data/SILO_downloads'
 # dir_Data = 'C:/Users/alex.xynias/OneDrive - Water Technology Pty Ltd/UQ/Thesis/nc_clean/netCDF4_input/'
+dir_Data = r"C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/TERN_downloads//"
     # the location of the .nc data (also where output is written to)
 
 # infile = '2000.in_var.nc'
 
-infile_var = "rnd24Adjust" 
+infile_var = "tscr_ave" 
         #TERN
             #epan_ave
             #rnd24Adjust
             #rnd24AdjustAdjust
+            # tscr_ave
         #SILO
             #daily_rain
             #et_morton_actual
@@ -48,10 +50,10 @@ infile_list = glob.glob(infile_form) # generates the list of files in dir_Data w
 
 # outfile = 'test_compile.csv' # name of compiled csv file to be written
 
-extent_east = 151.6 # east most longitude value (degrees)
-extent_west = 153.0 # west most longitude value (degrees)
-extent_north = -26.4 # north most latitude value (degrees)
-extent_south = -27.4 # south most latitude value (degrees)
+extent_east = 151.6 # east most longitude value (decimal degrees)
+extent_west = 153.0 # west most longitude value (decimal degrees)
+extent_north = -26.4 # north most latitude value (decimal degrees)
+extent_south = -27.4 # south most latitude value (decimal degrees)
 
 
 for file_location in infile_list:
@@ -123,7 +125,7 @@ for file_location in infile_list:
         'longitude': longitudes_grid,
         
         # 'in_var': in_var[:].flatten()}) # original line
-        'rnd24Adjust.daily': in_var_trim[:].flatten()})
+        'tscr_ave.daily': in_var_trim[:].flatten()})
     df.to_csv(outfile_location, index=False)
         # TODO: fix that strange rounding error in the lat/long variables that I've seen when saving to csv before
     elapsed_time = time.time() - tic

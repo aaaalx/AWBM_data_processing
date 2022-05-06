@@ -44,31 +44,35 @@ dict_model = {
     }
 
 dict_var = {
-    1: 'rnd24' # rnd24 is 24hr rain (?)
-    ,2: 'epan_ave'  # epan_ave for pan evap avg
-    ,3: 'rnd24Adjust' # bias corrected 24 hr rain (?)
-    # ,4: 'tscr_ave' # daily mean temp
+    # 1: 'rnd24' # rnd24 is 24hr rain (?)
+    # ,2: 'epan_ave'  # epan_ave for pan evap avg
+    # ,3: 'rnd24Adjust' # bias corrected 24 hr rain (?)
+    # ,
+    1: 'tscr_ave' # daily mean temp
     }
 
 dict_var_name = {
-    1: 'Precipitation'
-    ,2: 'PanEvaporation'
-    ,3: 'Precipitation'
-    # ,4: 'MeanTemperature'
+    # 1: 'Precipitation'
+    # ,2: 'PanEvaporation'
+    # ,3: 'Precipitation'
+    # ,
+    1: 'MeanTemperature'
     }
 
 dict_timestep = { # defines the string TERN uses to organise results by timestep
-    1: 'daily'
-    ,2: 'daily'
-    ,3: 'daily_adjusted'
-    # ,4: 'daily'    
+    # 1: 'daily'
+    # ,2: 'daily'
+    # ,3: 'daily_adjusted'
+    # ,
+    1: 'daily'    
     }
 
 dict_filenamefiller = { # defines another part [grid type?] of the filename and url that changes with variable
+    # 1: '.daily.ccam10_'
+    # ,2: '.daily.ccam10_'
+    # ,3: '.daily.ccam10-awap_' #for the bias corrected data,  "-awap" is added for "Australian Water Availability Project"
+    # ,
     1: '.daily.ccam10_'
-    ,2: '.daily.ccam10_'
-    ,3: '.daily.ccam10-awap_' #for the bias corrected data,  "-awap" is added for "Australian Water Availability Project"
-    # ,4: '.daily.ccam10_'
     }
 
 dict_rcp = {
@@ -94,20 +98,22 @@ url_east='153'
 url_south='-28' 
 url_year ='1985' # first year to download data from, >1980
 
-save_directory = 'TERN_downloads/' # the subdirectory for all files to write to
-
+# save_directory = 'TERN_downloads/' # the subdirectory for all files to write to
+save_directory = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/TERN_downloads//'
 # =============================================================================
 #%%                  Create url string from parameters
 # =============================================================================
-with open(save_directory + 'url_log.txt', 'a') as log:
+# with open(save_directory + 'url_log.txt', 'a') as log:
+with open(r"C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/TERN_downloads/url_log.txt", 'a') as log:
+
     log.write('Coords (N,S,E,W): ' + url_north + ',' + url_south + ',' + url_east + ',' + url_west +',-----------,' + time.ctime() + '\n')
 
 for var_number in range(1,number_of_var): # loops through all defined variables
-    try:
+    # try:
         for rcp_number in range(1,number_of_rcp): # loops through the  RCPs
-            try:
+            # try:
                 for model_number in range(1, number_of_models): # loops through all models
-                    try:
+                    # try:
        
                         print('\n'+'... Creating url for ' + dict_var[var_number] + ' from: ' + dict_model[model_number])
                         print('......Var   : ' + str(var_number) + ' of ' + str(number_of_var-1))
@@ -177,16 +183,16 @@ for var_number in range(1,number_of_var): # loops through all defined variables
                             log.write('\n')
                                                        
                             
-                    except:
-                        print('Error; Download skipped, attempting next model...')
-                        continue
+    #                 except:
+    #                     print('Error; Download skipped, attempting next model...')
+    #                     continue
                         
-            except:
-                print('Error; Download skipped, attempting next RCP...')
-                continue                 
-    except:
-        print('Error; Download skipped, attempting next var...')
-        continue
+    #         except:
+    #             print('Error; Download skipped, attempting next RCP...')
+    #             continue                 
+    # except:
+    #     print('Error; Download skipped, attempting next var...')
+    #     continue
 
 elapsed_script = round((time.time() - tic_script),5)
 print('....Script ended; total time: ' + str(elapsed_script) + ' [s]' )
