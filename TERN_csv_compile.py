@@ -70,17 +70,18 @@ dict_var = {
     1: 'rnd24' # rnd24 is 24hr rain (?)
     ,2: 'epan_ave'  # epan_ave for pan evap avg
     ,3: 'rnd24Adjust' # bias corrected 24 hr rain (?)
-    # ,4: 'tscr_ave' # daily mean temp
+    ,4: 'tscr_ave' # daily mean temp
     }
 
 dict_var_col = { # variable name headers as they appear in the infile csvs
     1: 'rnd24.daily'
     ,2: 'epan_ave'
-    ,3: 'rnd24Adjust.daily'    
+    ,3: 'rnd24Adjust.daily'
+    ,4: 'tscr_ave.daily'
     }
 
 # Outfile information (for naming)
-dir_Out = (dir_Data + 'Compile/' )  # Specify folder to write compiled csvs to. (must end in /)
+dir_Out = (dir_Data + 'CompileV2/' )  # Specify folder to write compiled csvs to. (must end in /)
 outfile_prefix = 'Compile-'
 
 # =============================================================================
@@ -141,26 +142,5 @@ for i_model in dict_model:
     
 
 print('Export for all models and variables')
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

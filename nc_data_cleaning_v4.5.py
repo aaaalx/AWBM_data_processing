@@ -55,7 +55,7 @@ extent_west = 153.0 # west most longitude value (decimal degrees)
 extent_north = -26.4 # north most latitude value (decimal degrees)
 extent_south = -27.4 # south most latitude value (decimal degrees)
 
-
+   
 for file_location in infile_list:
 # =============================================================================
 # # Locating and opening netCDF4 files
