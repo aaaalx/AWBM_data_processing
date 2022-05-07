@@ -112,7 +112,7 @@ for f in infile_list: # for each model's data file (f)...
     print(f'Loading climate data for {model_name}...')
     df_in = pd.read_csv(f,parse_dates=['time'])
     print(f'   {len(df_in)} lines loaded...')
-    print('   Applying formatting fixes...')
+    print('      Applying formatting fixes...')
     df_in['time'] = df_in['time'] + pd.Timedelta(hours=UTC_hrs)
     date_start = df_in['time'].min()
     date_end = df_in['time'].max()
@@ -122,8 +122,7 @@ for f in infile_list: # for each model's data file (f)...
     
     df_in['tscr_ave.daily'] = df_in['tscr_ave.daily'] + convert_K_to_C
     
-    toc_f = time.time() - tic_f
-    print(f'   ...Completed in {round(toc_f,5)} ')
+
     
     # remove data for grids outside of the catchment https://stackoverflow.com/questions/44803007/pandas-dataframe-use-np-where-and-drop-together
         # Data in the CompileV2 has data for grids outside of the catchment, 
@@ -131,6 +130,9 @@ for f in infile_list: # for each model's data file (f)...
     df_catchment = df_in.drop(np.where(~df_in['X_Y'].isin(df_vor['X_Y']))[0])
         # the ~ here reverses the "isin" condition to work as "is not in x list"
         # np.where returns an array, the [0] selects just the bool part so that .drop can use it
+        
+    toc_f = time.time() - tic_f
+    print(f'      ...Completed in {round(toc_f,5)} ')
     del df_in # to save memory
 # =============================================================================
 #%% Apply df_vor factors to input data
@@ -143,25 +145,25 @@ for f in infile_list: # for each model's data file (f)...
         return factored_value
     
     df_Prop = df_catchment
-    
+    print('   Applying Spatial Proportions...')
     for i in dict_var_col:
         tic_factor = time.time()
         v = dict_var_col[i]
-        print(f'Factoring {v}...')
+        print(f'      Factoring {v}...')
         df_Prop[v] = df_catchment.apply(
             lambda row: ApplyProp(row['X_Y'],row[v]),axis=1
             )
         toc_factor = time.time() - tic_factor
-        print(f'   done in {toc_factor}')
+        print(f'      ...done in {toc_factor}')
 # =============================================================================
 #%% Groupby time & sum for final export 
 # =============================================================================
-    print(f'Groupby time & sum for {model_name}...')
+    print(f'   Groupby time & sum for {model_name}...')
         # for each timestep, sum each variable to calculate the catchment weighted average
     tic_gbtime = time.time()
     df_out = df_Prop.groupby('time').sum()
     toc_gbtime = time.time() - tic_gbtime
-    print(f'   ...finished in {toc_gbtime} ')
+    print(f'      ...finished in {toc_gbtime} ')
 
 
 # =============================================================================
@@ -173,9 +175,10 @@ for f in infile_list: # for each model's data file (f)...
 
     dir_out_full = os.path.join(dir_out,fn_out)
     df_out.to_csv(dir_out_full)
-    
+    print(f'Saved to {dir_out_full}')
 
-
+toc_script = time.time()-tic_script
+print(f'Script complete in {toc_script}')
 # =============================================================================
 #%% SS code
 # =============================================================================
