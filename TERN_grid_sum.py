@@ -30,20 +30,25 @@ tic_script = time.time()
 #%% User input 
 # =============================================================================
 
-dir_voronoi_somerset = r"\\fs07.watech.local\redirected folders$\alex.xynias\My Documents\GitHub\AWBM_data_processing\Voronoi_CCAM10_somerset.csv"
-dir_voronoi_wivenhoe = r"\\fs07.watech.local\redirected folders$\alex.xynias\My Documents\GitHub\AWBM_data_processing\Voronoi_CCAM10_wivenhoe.csv"
+# dir_voronoi_somerset = r"\\fs07.watech.local\redirected folders$\alex.xynias\My Documents\GitHub\AWBM_data_processing\Voronoi_CCAM10_somerset.csv"
+# dir_voronoi_wivenhoe = r"\\fs07.watech.local\redirected folders$\alex.xynias\My Documents\GitHub\AWBM_data_processing\Voronoi_CCAM10_wivenhoe.csv"
+
+dir_voronoi_somerset = r"C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data_processing/Voronoi_CCAM10_somerset.csv"
+dir_voronoi_wivenhoe = r"C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data_processing/Voronoi_CCAM10_wivenhoe.csv"
 dir_vor = dir_voronoi_wivenhoe # [gridID][x][y][area_km2][proportion of total area]
 
-dir_data = r"C:\Users\alex.xynias\OneDrive - Water Technology Pty Ltd\UQ\Thesis\Data\TERN_downloads\CompileV2"
+# dir_data = r"C:\Users\alex.xynias\OneDrive - Water Technology Pty Ltd\UQ\Thesis\Data\TERN_downloads\CompileV2"
+dir_data = r"C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/TERN_downloads/CompileV2"
+
 
 infile_form = "Compile-*.csv" # General form for the data files in the format: [time][latitude][longitude][data - see: dict_var_col]
 infile_list = glob.glob(os.path.join(dir_data,infile_form)) 
 
-dir_out = r"C:\Users\alex.xynias\OneDrive - Water Technology Pty Ltd\UQ\Thesis\Data\TERN_downloads\CompileV2\grids_Full"
+# dir_out = r"C:\Users\alex.xynias\OneDrive - Water Technology Pty Ltd\UQ\Thesis\Data\TERN_downloads\CompileV2\grids_Full"
+dir_out = r"C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/TERN_downloads/CompileV2/grids_Full"
 
-outfile_gridprop = 'gridprop' # filename for the factored grid data [outfile_gridprop]~[modelname]~[gridID].csv
-outfile_compile = 'CCAM10_wivenhoe.csv'
-
+outfile_prefix = 'CCAM10_wivenhoe~' #for the output filename e.g. {outfile_prefix}{model_name}.csv
+    # ~ at the end to help with splitting later on
 convert_K_to_C = -273.15
 UTC_hrs = +9
 
@@ -120,27 +125,55 @@ for f in infile_list: # for each model's data file (f)...
     toc_f = time.time() - tic_f
     print(f'   ...Completed in {round(toc_f,5)} ')
     
-    input('check')
-
-   
+    # remove data for grids outside of the catchment https://stackoverflow.com/questions/44803007/pandas-dataframe-use-np-where-and-drop-together
+        # Data in the CompileV2 has data for grids outside of the catchment, 
+        # these needs to be filtered about before the next step otherwise it runs into a key error   
+    df_catchment = df_in.drop(np.where(~df_in['X_Y'].isin(df_vor['X_Y']))[0])
+        # the ~ here reverses the "isin" condition to work as "is not in x list"
+        # np.where returns an array, the [0] selects just the bool part so that .drop can use it
+    del df_in # to save memory
 # =============================================================================
-#%% Groupby and apply df_vor factors to input data
+#%% Apply df_vor factors to input data
 # =============================================================================
 # https://realpython.com/pandas-groupby/#pandas-groupby-vs-sql
 
-by_grid = df_in.groupby('X_Y')
-
-by_grid.groups['152.1-27.4'] # index of rows which are in the group
-by_grid.get_group("152.1-27.4") # returns the rows in that group
-
-for g in dict_prop:
+    def ApplyProp(X_Y,Value):
+        # Given a grid code (X_Y) and a variable value(Value); return the correct factored value for that grid
+        factored_value = Value * dict_prop[X_Y]
+        return factored_value
     
-    df_in.groupby('X_Y',sort=False)[g]   
-    input('check2')
-
+    df_Prop = df_catchment
+    
+    for i in dict_var_col:
+        tic_factor = time.time()
+        v = dict_var_col[i]
+        print(f'Factoring {v}...')
+        df_Prop[v] = df_catchment.apply(
+            lambda row: ApplyProp(row['X_Y'],row[v]),axis=1
+            )
+        toc_factor = time.time() - tic_factor
+        print(f'   done in {toc_factor}')
 # =============================================================================
 #%% Groupby time & sum for final export 
 # =============================================================================
+    print(f'Groupby time & sum for {model_name}...')
+        # for each timestep, sum each variable to calculate the catchment weighted average
+    tic_gbtime = time.time()
+    df_out = df_Prop.groupby('time').sum()
+    toc_gbtime = time.time() - tic_gbtime
+    print(f'   ...finished in {toc_gbtime} ')
+
+
+# =============================================================================
+#%% Export processed model results
+# =============================================================================
+    print(f'Starting export for {model_name}...')
+    
+    fn_out = f'{outfile_prefix}{model_name}.csv'
+
+    dir_out_full = os.path.join(dir_out,fn_out)
+    df_out.to_csv(dir_out_full)
+    
 
 
 # =============================================================================
@@ -153,6 +186,12 @@ for g in dict_prop:
      #                                   )
 
 
+
+# by_grid = df_in.groupby('X_Y')
+
+# by_grid.groups['152.1-27.4'] # index of rows which are in the group
+# by_grid.get_group("152.1-27.4") # returns the rows in that group
+
 # =============================================================================
 # Export factored grid time series to files
 # =============================================================================
@@ -164,6 +203,10 @@ for g in dict_prop:
     # dict_prop = dict(zip(df_vor['X_Y'],df_vor['proportion'])) # creates the dictionary to assign each cell (X_Y) a "prop" factor
   
    
+
+
+
+
 
     # for g in dict_prop: # for each grid ID (g)...
     #     df_grid = df_in.loc[df_in['X_Y'] == str(g)] # this df is a timeseries for one grid cell
