@@ -9,3 +9,6 @@ examples/RainfallAnalysisExample-BlackbuttPostOffice/Output-DryEvents-SILO_Grego
 examples/RainfallAnalysisExample-BlackbuttPostOffice/Output-RainfallEvents-Blackbutt-SILO.csv
 examples/RainfallAnalysisExample-BlackbuttPostOffice/Output-RainfallEvents-SILO_Gregors_1985-2020.csv
 examples/RainfallAnalysisExample-BlackbuttPostOffice/RainfallAnalysis.py
+examples/plotting.py
+*.ini
+*.bak

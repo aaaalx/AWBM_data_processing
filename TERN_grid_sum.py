@@ -14,4 +14,173 @@ Converts the output of TERN_csv_compile (gridded data) to a weighted (by proport
 
 
 """
+# =============================================================================
+#%% Set up
+# =============================================================================
+import glob
+import pandas as pd
+import numpy as np
+pd.set_option('display.max_columns', None)
+import os
+import time
+tic_script = time.time()
 
+
+# =============================================================================
+#%% User input 
+# =============================================================================
+
+dir_voronoi_somerset = r"\\fs07.watech.local\redirected folders$\alex.xynias\My Documents\GitHub\AWBM_data_processing\Voronoi_CCAM10_somerset.csv"
+dir_voronoi_wivenhoe = r"\\fs07.watech.local\redirected folders$\alex.xynias\My Documents\GitHub\AWBM_data_processing\Voronoi_CCAM10_wivenhoe.csv"
+dir_vor = dir_voronoi_wivenhoe # [gridID][x][y][area_km2][proportion of total area]
+
+dir_data = r"C:\Users\alex.xynias\OneDrive - Water Technology Pty Ltd\UQ\Thesis\Data\TERN_downloads\CompileV2"
+
+infile_form = "Compile-*.csv" # General form for the data files in the format: [time][latitude][longitude][data - see: dict_var_col]
+infile_list = glob.glob(os.path.join(dir_data,infile_form)) 
+
+dir_out = r"C:\Users\alex.xynias\OneDrive - Water Technology Pty Ltd\UQ\Thesis\Data\TERN_downloads\CompileV2\grids_Full"
+
+outfile_gridprop = 'gridprop' # filename for the factored grid data [outfile_gridprop]~[modelname]~[gridID].csv
+outfile_compile = 'CCAM10_wivenhoe.csv'
+
+convert_K_to_C = -273.15
+UTC_hrs = +9
+
+
+# =============================================================================
+#%% Other Settings
+# =============================================================================
+dict_model = {
+    # RCP4.5
+    1: 'ACCESS1-0Q_rcp45', # Australian Community Climate and Earth-System Simulator, version 1.0
+    2: 'ACCESS1-3Q_rcp45', # Australian Community Climate and Earth-System Simulator, version 1.3
+    3: 'CCSM4Q_rcp45', # Community Climate System Model, version 4
+    4: 'CNRM-CM5Q_rcp45', # Centre National de Recherches Météorologiques Coupled Global Climate Model, version 5
+    5: 'CSIRO-Mk3-6-0Q_rcp45', # Commonwealth Scientific and Industrial Research Organisation Mark 3.6.0
+    6: 'GFDL-CM3Q_rcp45', # Geophysical Fluid Dynamics Laboratory Climate Model, version 3
+    7: 'GFDL-ESM2MQ_rcp45', # Geophysical Fluid Dynamics Laboratory Earth System Model with Modular Ocean Model, version 4 component
+    8: 'HadGEM2Q_rcp45', # Hadley Centre Global Environment Model, version 2 
+    9: 'MIROC5Q_rcp45', # Model for Interdisciplinary Research on Climate, version 5 
+    10: 'MPI-ESM-LRQ_rcp45', # Max Planck Institute Earth System Model, low resolution 
+    11: 'NorESM1-MQ_rcp45', # Norwegian Earth System Model, version 1 (intermediate resolution)
+    
+    # RCP8.5
+    12: 'ACCESS1-0Q_rcp85', # Australian Community Climate and Earth-System Simulator, version 1.0
+    13: 'ACCESS1-3Q_rcp85', # Australian Community Climate and Earth-System Simulator, version 1.3
+    14: 'CCSM4Q_rcp85', # Community Climate System Model, version 4
+    15: 'CNRM-CM5Q_rcp85', # Centre National de Recherches Météorologiques Coupled Global Climate Model, version 5
+    16: 'CSIRO-Mk3-6-0Q_rcp85', # Commonwealth Scientific and Industrial Research Organisation Mark 3.6.0
+    17: 'GFDL-CM3Q_rcp85', # Geophysical Fluid Dynamics Laboratory Climate Model, version 3
+    18: 'GFDL-ESM2MQ_rcp85', # Geophysical Fluid Dynamics Laboratory Earth System Model with Modular Ocean Model, version 4 component
+    19: 'HadGEM2Q_rcp85', # Hadley Centre Global Environment Model, version 2 
+    20: 'MIROC5Q_rcp85', # Model for Interdisciplinary Research on Climate, version 5 
+    21: 'MPI-ESM-LRQ_rcp85', # Max Planck Institute Earth System Model, low resolution 
+    22: 'NorESM1-MQ_rcp85' # Norwegian Earth System Model, version 1 (intermediate resolution)
+    }
+
+dict_var_col = { # variable name headers as they appear in the infile csvs
+    1: 'rnd24.daily'
+    ,2: 'epan_ave'
+    ,3: 'rnd24Adjust.daily'
+    ,4: 'tscr_ave.daily' # needs to be converted to C from K
+    }
+
+# =============================================================================
+# %% Loading full climate data
+# =============================================================================
+
+# First load spatial data for the grids
+df_vor = pd.read_csv(dir_vor)
+df_vor['X_Y'] = df_vor['x'].astype(str) + df_vor['y'].astype(str) # creates the grid ID column
+df_vor.drop(columns=['x','y'],inplace=True)
+
+dict_prop = dict(zip(df_vor['X_Y'],df_vor['proportion'])) # creates the dictionary to assign each cell (X_Y) a "prop" factor
+  
+
+
+for f in infile_list: # for each model's data file (f)...
+    tic_f = time.time()
+    fn_in = f.split("\\")[-1]
+    model_name = fn_in[len(infile_form.split("*")[0]):-len(infile_form.split("*")[1])]
+        # Grabs model name from filename: fn_in[number of characters before the *:-number of characters after the *]
+    print(f'Loading climate data for {model_name}...')
+    df_in = pd.read_csv(f,parse_dates=['time'])
+    print(f'   {len(df_in)} lines loaded...')
+    print('   Applying formatting fixes...')
+    df_in['time'] = df_in['time'] + pd.Timedelta(hours=UTC_hrs)
+    date_start = df_in['time'].min()
+    date_end = df_in['time'].max()
+    
+    df_in['X_Y'] = df_in['longitude'].astype(str) + df_in['latitude'].astype(str) # creates the grid ID column
+    df_in.drop(columns=['latitude','longitude'],inplace=True)
+    
+    df_in['tscr_ave.daily'] = df_in['tscr_ave.daily'] + convert_K_to_C
+    
+    toc_f = time.time() - tic_f
+    print(f'   ...Completed in {round(toc_f,5)} ')
+    
+    input('check')
+
+   
+# =============================================================================
+#%% Groupby and apply df_vor factors to input data
+# =============================================================================
+# https://realpython.com/pandas-groupby/#pandas-groupby-vs-sql
+
+by_grid = df_in.groupby('X_Y')
+
+by_grid.groups['152.1-27.4'] # index of rows which are in the group
+by_grid.get_group("152.1-27.4") # returns the rows in that group
+
+for g in dict_prop:
+    
+    df_in.groupby('X_Y',sort=False)[g]   
+    input('check2')
+
+# =============================================================================
+#%% Groupby time & sum for final export 
+# =============================================================================
+
+
+# =============================================================================
+#%% SS code
+# =============================================================================
+
+     # df_prop['rnd24.daily'] = np.where(df_in['X_Y'] == g, #https://numpy.org/doc/stable/reference/generated/numpy.where.html
+     #                                   df_in['rnd24.daily'] * dict_prop[g],
+     #                                   df_prop['rnd24.daily']
+     #                                   )
+
+
+# =============================================================================
+# Export factored grid time series to files
+# =============================================================================
+
+    # df_vor = pd.read_csv(dir_vor)
+    # df_vor['X_Y'] = df_vor['x'].astype(str) + df_vor['y'].astype(str) # creates the grid ID column
+    # df_vor.drop(columns=['x','y'],inplace=True)
+
+    # dict_prop = dict(zip(df_vor['X_Y'],df_vor['proportion'])) # creates the dictionary to assign each cell (X_Y) a "prop" factor
+  
+   
+
+    # for g in dict_prop: # for each grid ID (g)...
+    #     df_grid = df_in.loc[df_in['X_Y'] == str(g)] # this df is a timeseries for one grid cell
+        
+    #     print(f'Factoring variables for {g}...')
+    #     for i in dict_var_col: # for each variable name (v)...
+    #         v = dict_var_col[i]
+    #         df_grid[v] = df_grid[v] * dict_prop[g]
+
+    #         print(f'   Factored {v} by {dict_prop[g]} ')
+        
+    #     print(f'Exporting {g} to file...')
+        
+    #     fn_gridprop = f'{outfile_gridprop}~{model_name}~{g}.csv'
+    #     outfile_grid = os.path.join(dir_out,fn_gridprop)
+    #     df_grid.to_csv(outfile_grid,index=False)
+    #     print(f'   {outfile_grid}')
+    
+    # gridprop_form = f'{outfile_gridprop}*.csv'
+    # gridprop_list =  glob.glob(os.path.join(dir_out,gridprop_form)) 
