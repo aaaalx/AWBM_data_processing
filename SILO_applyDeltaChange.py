@@ -32,7 +32,14 @@ P_p is the resulting delta-change projected timeseries data
         This is the "traditional delta change method" from (Ra¨ty et al, 2014) - linked above
 
 
+
+
+
+
+
+
 """
+
 
 # =============================================================================
 # %% Inputs & Setup
@@ -347,10 +354,25 @@ for i in dict_rcp:
 
 
 # TODO: Delta Change calculation based on M2, or others from the paper?
+    # TODO: The monthly mean of the Po data (Po_avg) also needs to be calculated
+    
+    
+    # TODO: Calculate gamma (std_s/std_c)
+    
+    
+    # TODO: Calculate Pp_M2 = (Po-Po_avg)*gamma + alpha*Po_avg
+    
+    
+    # M3 seems to require some itteration of "b", I think this step would be required
+        # in order to do the critical eval of the AWAP bias correction.
 
 
-
-
+    # M4 avoids the itteration part, but requires calculating the inverse CDF of the Po data
+        # maybe an existing package already handles this?
+        
+    # The paper states that all methods except for M5 and M9 "give the same change in mean precipitation"
+        # So, I'll disregard coding those other methods for now.
+        
 
 
 
