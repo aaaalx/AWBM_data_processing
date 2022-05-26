@@ -13,6 +13,9 @@ Converts the output of TERN_csv_compile (gridded data) to a weighted (by proport
 
 
 
+
+THIS SCRIPT uses the TERN_grid_sum.py method (using groupby) but is modified to work with SILO data.
+
 """
 # =============================================================================
 #%% Set up
@@ -30,27 +33,26 @@ tic_script = time.time()
 #%% User input 
 # =============================================================================
 
-# dir_voronoi_somerset = r"\\fs07.watech.local\redirected folders$\alex.xynias\My Documents\GitHub\AWBM_data_processing\Voronoi_CCAM10_somerset.csv"
-# dir_voronoi_wivenhoe = r"\\fs07.watech.local\redirected folders$\alex.xynias\My Documents\GitHub\AWBM_data_processing\Voronoi_CCAM10_wivenhoe.csv"
-
 dir_voronoi_somerset = r"C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data_processing/Voronoi_CCAM10_somerset.csv"
 dir_voronoi_wivenhoe = r"C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data_processing/Voronoi_CCAM10_wivenhoe.csv"
-dir_vor = dir_voronoi_wivenhoe # [gridID][x][y][area_km2][proportion of total area]
+dir_voronoi_full = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data_processing/Voronoi_SILO_fullcatchment.csv'
 
-# dir_data = r"C:\Users\alex.xynias\OneDrive - Water Technology Pty Ltd\UQ\Thesis\Data\TERN_downloads\CompileV2"
+dir_vor = dir_voronoi_full # [gridID][x][y][area_km2][proportion of total area]
+
 dir_data = r"C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/TERN_downloads/CompileV2"
+dir_data = r"C:\Users\Alex\OneDrive\Documents\Uni\Honours Thesis\Data\SILO_downloads\deltachange\Compile"
 
-
-infile_form = "Compile-*.csv" # General form for the data files in the format: [time][latitude][longitude][data - see: dict_var_col]
+infile_form = "fullcatchment_SILO*.csv" # General form for the data files in the format: [time][latitude][longitude][data - see: dict_var_col]
 infile_list = glob.glob(os.path.join(dir_data,infile_form)) 
 
 # dir_out = r"C:\Users\alex.xynias\OneDrive - Water Technology Pty Ltd\UQ\Thesis\Data\TERN_downloads\CompileV2\grids_Full"
-dir_out = r"C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/TERN_downloads/CompileV2/grids_Full"
+# dir_out = r"C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/TERN_downloads/CompileV2/grids_Full"
+dir_out = r"C:\Users\Alex\OneDrive\Documents\Uni\Honours Thesis\Data\SILO_downloads\deltachange\Compile"
 
-outfile_prefix = 'CCAM10_wivenhoe~' #for the output filename e.g. {outfile_prefix}{model_name}.csv
+outfile_prefix = 'SILO_full~' #for the output filename e.g. {outfile_prefix}{model_name}.csv
     # ~ at the end to help with splitting later on
-convert_K_to_C = -273.15
-UTC_hrs = +9
+# convert_K_to_C = 0 # set to 0 when data is already in c; otherwise use -273.15
+# UTC_hrs = 0 
 
 
 # =============================================================================
@@ -85,10 +87,12 @@ dict_model = {
     }
 
 dict_var_col = { # variable name headers as they appear in the infile csvs
-    1: 'rnd24.daily'
-    ,2: 'epan_ave'
-    ,3: 'rnd24Adjust.daily'
-    ,4: 'tscr_ave.daily' # needs to be converted to C from K
+    # 1: 'rnd24.daily'
+    # ,2: 'epan_ave'
+    # ,3: 'rnd24Adjust.daily'
+    # ,4: 'tscr_ave.daily' # needs to be converted to C from K
+    1: 'daily_rain'
+    ,2: 'et_morton_potential'
     }
 
 # =============================================================================
@@ -113,14 +117,14 @@ for f in infile_list: # for each model's data file (f)...
     df_in = pd.read_csv(f,parse_dates=['time'])
     print(f'   {len(df_in)} lines loaded...')
     print('      Applying formatting fixes...')
-    df_in['time'] = df_in['time'] + pd.Timedelta(hours=UTC_hrs)
+    # df_in['time'] = df_in['time'] + pd.Timedelta(hours=UTC_hrs)
     date_start = df_in['time'].min()
     date_end = df_in['time'].max()
     
     df_in['X_Y'] = df_in['longitude'].astype(str) + df_in['latitude'].astype(str) # creates the grid ID column
     df_in.drop(columns=['latitude','longitude'],inplace=True)
     
-    df_in['tscr_ave.daily'] = df_in['tscr_ave.daily'] + convert_K_to_C
+    # df_in['tscr_ave.daily'] = df_in['tscr_ave.daily'] + convert_K_to_C
     
 
     

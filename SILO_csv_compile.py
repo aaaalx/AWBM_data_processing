@@ -37,11 +37,12 @@ import time
 # Input data information 
 # dir_Data = 'C:/Users/alex.xynias/OneDrive - Water Technology Pty Ltd/UQ/Thesis/Data/SILO_downloads/' # (must end in /)
 
-dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/' # (must end in /)
+dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/deltachange/' # (must end in /)
 
 dict_var = { # comment out the variables you don't want, add any others that are needed
     1: 'daily_rain'
-    ,2: 'et_morton_actual'
+    # ,2: 'et_morton_actual'
+    ,2: 'et_morton_potential'
     # ,3: 'evap_morton_lake'
     # ,4: 'evap_pan'
     # ,5: 'monthly_rain'
@@ -52,7 +53,7 @@ dict_var = { # comment out the variables you don't want, add any others that are
 # Outfile information (for naming)
 dir_Out = (dir_Data + 'Compile/' )  # Specify folder to write compiled csvs to. (must end in /)
 outfile_prefix = 'SILO-1985-1985-V3' # string to be placed at the start of the export filename as [string].csv
-year_select = '1985' # '*' for all years in the dir_Data folder, or specify with '1985' etc as string
+year_select = '*' # '*' for all years in the dir_Data folder, or specify with '1985' etc as string
 
 # =============================================================================
 #%% Compile SILO data into single DF
@@ -64,6 +65,7 @@ for i_var in dict_var: # Loops through each variable in use inputs
     infile_form = (dir_Data + year_select +'.' +  infile_var + ".csv") # form/pattern for the input csv file path
     infile_list = glob.glob(infile_form) # generates the list of filepaths in dir_Data which match the infile_form criteria
     
+    # input('check infile_list')
     # outfile_name = (dir_Out + outfile_prefix + '.' + infile_var + '.csv')    
     if i_var == 1: # define the case for the first df 
         outfile_name = (dir_Out + outfile_prefix + '.csv')    

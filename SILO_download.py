@@ -5,6 +5,7 @@
 #For example, the 2015 data for class A pan evaporation can be downloaded using curl as follows:
 # curl "https://s3-ap-southeast-2.amazonaws.com/silo-open-data/annual/evap_pan/2015.evap_pan.nc" --remote-name
 
+# https://s3-ap-southeast-2.amazonaws.com/silo-open-data/annual/index.html
 
 # shape file to .nc mask 
 # https://mygeoblog.com/2019/06/25/mask-netcdf-using-shp-file/
@@ -29,12 +30,13 @@ import requests
 # =============================================================================
 
 dict_var = { # comment out the variables you don't want, add any others that are needed
-    1: 'daily_rain'
-    ,2: 'et_morton_actual'
+    # 1: 'daily_rain'
+    # ,2: 'et_morton_actual'
     # ,3: 'evap_morton_lake'
     # ,4: 'evap_pan'
     # ,5: 'monthly_rain'
     # ,6: 'radiation'
+    1: 'et_morton_potential'
     }
 
 number_of_var = len(dict_var) +1 # +1 for range()
@@ -42,10 +44,11 @@ number_of_var = len(dict_var) +1 # +1 for range()
 # User inputs
 # =============================================================================
 
-time_start = 1985 # first year to download to
-time_end = 2020 # last year to download
+time_start = 1900 # first year to download toa
+time_end = 2021 # last year to download
 url_start = 'https://s3-ap-southeast-2.amazonaws.com/silo-open-data/annual/'
-save_directory = 'SILO_downloads/' # the subdirectory for all files to write to
+save_directory = 'SILO_downloads/deltachange/' # the subdirectory for all files to write to
+save_directory = r"C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/deltachange//"
 
 
 # =============================================================================
@@ -53,9 +56,9 @@ save_directory = 'SILO_downloads/' # the subdirectory for all files to write to
 # =============================================================================
 tic_script = time.time() # starts the timer
 for var_number in range(1,number_of_var):
-    try: # Comment out "try" and "except" to bugfix
+    # try: # Comment out "try" and "except" to bugfix
         for year in range(time_start,time_end+1):
-            try:                
+            # try:                
 # =============================================================================
 #                 Generate filenames and URLS
 # =============================================================================
@@ -99,10 +102,10 @@ for var_number in range(1,number_of_var):
             
           
             
-            except:
-                print('Error, trying next year...')
-    except:
-        print('Error, trying next variable...')
+            # except:
+                # print('Error, trying next year...')
+    # except:
+        # print('Error, trying next variable...')
                 
                 
                 

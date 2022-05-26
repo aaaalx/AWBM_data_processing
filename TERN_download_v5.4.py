@@ -48,7 +48,8 @@ dict_var = {
     # ,2: 'epan_ave'  # epan_ave for pan evap avg
     # ,3: 'rnd24Adjust' # bias corrected 24 hr rain (?)
     # ,
-    1: 'tscr_ave' # daily mean temp
+    # 1: 'tscr_ave' # daily mean temp
+    1: 'tscr_aveAdjust' # bias adjusted daily mean temp
     }
 
 dict_var_name = {
@@ -64,7 +65,8 @@ dict_timestep = { # defines the string TERN uses to organise results by timestep
     # ,2: 'daily'
     # ,3: 'daily_adjusted'
     # ,
-    1: 'daily'    
+    # 1: 'daily'
+    1: 'daily_adjusted'
     }
 
 dict_filenamefiller = { # defines another part [grid type?] of the filename and url that changes with variable
@@ -72,7 +74,8 @@ dict_filenamefiller = { # defines another part [grid type?] of the filename and 
     # ,2: '.daily.ccam10_'
     # ,3: '.daily.ccam10-awap_' #for the bias corrected data,  "-awap" is added for "Australian Water Availability Project"
     # ,
-    1: '.daily.ccam10_'
+    # 1: '.daily.ccam10_'
+    1: '.daily.ccam10-awap_'
     }
 
 dict_rcp = {
