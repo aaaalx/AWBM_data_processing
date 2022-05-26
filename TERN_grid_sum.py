@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """
+THIS VERSION OF THE SCRIPT IS SS
 Created on Fri May  6 15:03:51 2022
 
 @author: Alex
@@ -41,7 +42,6 @@ infile_list = glob.glob(os.path.join(dir_data,infile_form))
 
 dir_out = r"C:\Users\alex.xynias\OneDrive - Water Technology Pty Ltd\UQ\Thesis\Data\TERN_downloads\CompileV2\grids_Full"
 
-outfile_gridprop = 'gridprop' # filename for the factored grid data [outfile_gridprop]~[modelname]~[gridID].csv
 outfile_compile = 'CCAM10_wivenhoe.csv'
 
 convert_K_to_C = -273.15
@@ -134,10 +134,9 @@ by_grid.groups['152.1-27.4'] # index of rows which are in the group
 by_grid.get_group("152.1-27.4") # returns the rows in that group
 
 for g in dict_prop:
-    
     df_in.groupby('X_Y',sort=False)[g]   
     input('check2')
-
+# this version of the script is SS 
 # =============================================================================
 #%% Groupby time & sum for final export 
 # =============================================================================
@@ -156,6 +155,7 @@ for g in dict_prop:
 # =============================================================================
 # Export factored grid time series to files
 # =============================================================================
+# outfile_gridprop = 'gridprop' # filename for the factored grid data [outfile_gridprop]~[modelname]~[gridID].csv
 
     # df_vor = pd.read_csv(dir_vor)
     # df_vor['X_Y'] = df_vor['x'].astype(str) + df_vor['y'].astype(str) # creates the grid ID column
