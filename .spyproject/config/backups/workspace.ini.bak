@@ -4,7 +4,7 @@ save_data_on_exit = True
 save_history = True
 save_non_project_files = False
 project_type = 'empty-project-type'
-recent_files = ['..\\AWBM\\scripts_AWBM\\AWBM-Calibration.py', 'nc_data_cleaning_v4.5.py', 'SILO_csv_compile.py', 'TERN_grid_sum.py']
+recent_files = ['TERN_grid_sum.py', 'SILO_applyDeltaChange.py', 'TERN_Solar_to_PanEvap.py']
 
 [main]
 version = 0.2.0
