@@ -31,20 +31,25 @@ tic = time.time() # starts the run time timer
 dir_Data = r"C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/TERN_downloads//"
     # the location of the .nc data (also where output is written to)
 
+dir_Data = r"C:\Users\Alex\OneDrive\Documents\Uni\Honours Thesis\Data\SILO_downloads\deltachange\\"
+
 # infile = '2000.in_var.nc'
 
-infile_var = "tscr_ave" 
+infile_var = "et_morton_potential" 
         #TERN
             #epan_ave
             #rnd24Adjust
             #rnd24AdjustAdjust
             # tscr_ave
+            #tscr_aveAdjust
         #SILO
             #daily_rain
             #et_morton_actual
+            #et_morton_potential
+        
     # this part isn't automated; rerun script N times and update this each time with ctrl-R and replace all
-# infile_form = (dir_Data + "*"+ infile_var + ".nc") # for SILO data
-infile_form = (dir_Data + infile_var + "*.nc") # for TERN data
+infile_form = (dir_Data + "*"+ infile_var + ".nc") # for SILO data
+# infile_form = (dir_Data + infile_var + "*.nc") # for TERN data
 infile_list = glob.glob(infile_form) # generates the list of files in dir_Data which match the infile_form criteria
 
 
@@ -55,7 +60,7 @@ extent_west = 153.0 # west most longitude value (decimal degrees)
 extent_north = -26.4 # north most latitude value (decimal degrees)
 extent_south = -27.4 # south most latitude value (decimal degrees)
 
-   
+input('check infile list')
 for file_location in infile_list:
 # =============================================================================
 # # Locating and opening netCDF4 files
@@ -125,7 +130,7 @@ for file_location in infile_list:
         'longitude': longitudes_grid,
         
         # 'in_var': in_var[:].flatten()}) # original line
-        'tscr_ave.daily': in_var_trim[:].flatten()})
+        f'{infile_var}': in_var_trim[:].flatten()})
     df.to_csv(outfile_location, index=False)
         # TODO: fix that strange rounding error in the lat/long variables that I've seen when saving to csv before
     elapsed_time = time.time() - tic

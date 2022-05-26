@@ -30,21 +30,21 @@ from datetime import date, timedelta
 dir_voronoi_gregors = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data_processing/Voronoi_SILO_gregors.csv'
 dir_voronoi_full = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data_processing/Voronoi_SILO_fullcatchment.csv'
 # full data from "SILO_csv_compile.py"
-dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-2020.csv'
+dir_Data = r"C:\Users\Alex\OneDrive\Documents\Uni\Honours Thesis\Data\SILO_downloads\deltachange\Compile\fullcatchment_SILO-1900-2021.csv"
 # dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-1985.csv' # excel cropped, first few days of 1985
 # dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-1989-09-18.csv' # excel crop all rows supported in excel
 # dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-1985-V2.csv' # "SILO_csv_compile.py" cropped one year
 # dir_Data = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/SILO-1985-1985-V1.csv' # Excel cropped one year
 
 dir_vor = dir_voronoi_full  # choose which catchment to calculate proportions with
-dir_Out = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/Compile/grids_Full/'
+dir_Out = 'C:/Users/Alex/OneDrive/Documents/Uni/Honours Thesis/Data/SILO_downloads/deltachange/Compile/grids_Full/'
 dir_Log = (dir_Out + 'log.txt')  # where to write the log file for grid errors
 
-outfile_prefix = 'SILO_Full_1985-2020_'  # [outfile_prefix][X_Y].csv
-outfile_compile = 'SILO_Full_1985-2020-pd.csv'  # filename to write end product to
+outfile_prefix = 'SILO_Full_1900-2021_'  # [outfile_prefix][X_Y].csv
+outfile_compile = 'SILO_Full_1900-2021-pd.csv'  # filename to write end product to
 
-start_date = date(1985,1,1) # TODO: I could make it read this from the dir_Data auto 
-end_date = date(2020,12,31)
+start_date = date(1900,1,1) # TODO: I could make it read this from the dir_Data auto 
+end_date = date(2021,12,31)
 
 
 # =============================================================================
@@ -105,7 +105,7 @@ for g in range(0, len(dict_prop)):  # for each grid defined by 'dir_vor'...
     factor_g = dict_prop[df_vor['X_Y'][g]]
     # https://stackoverflow.com/questions/20625582/how-to-deal-with-settingwithcopywarning-in-pandas
     df_crop_g['daily_rain'] = factor_g * df_crop_g['daily_rain']
-    df_crop_g['et_morton_actual'] = factor_g * df_crop_g['et_morton_actual']
+    df_crop_g['et_morton_potential'] = factor_g * df_crop_g['et_morton_potential']
     toc = round(time.time() - tic, 5)
     print(f'... df_crop_g updated t={toc}')
 

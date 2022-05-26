@@ -68,9 +68,10 @@ dict_model = {
 
 dict_var = {
     1: 'rnd24' # rnd24 is 24hr rain (?)
-    ,2: 'epan_ave'  # epan_ave for pan evap avg
+    ,2: 'epan_ave'  # epan_ave for pan evap avg5
     ,3: 'rnd24Adjust' # bias corrected 24 hr rain (?)
     ,4: 'tscr_ave' # daily mean temp
+    ,5: 'tscr_aveAdjust'
     }
 
 dict_var_col = { # variable name headers as they appear in the infile csvs
@@ -78,11 +79,12 @@ dict_var_col = { # variable name headers as they appear in the infile csvs
     ,2: 'epan_ave'
     ,3: 'rnd24Adjust.daily'
     ,4: 'tscr_ave.daily'
+    ,5: 'tscr_aveAdjust.daily'
     }
 
 # Outfile information (for naming)
-dir_Out = (dir_Data + 'CompileV2/' )  # Specify folder to write compiled csvs to. (must end in /)
-outfile_prefix = 'Compile-'
+dir_Out = (dir_Data + 'CompileV3/' )  # Specify folder to write compiled csvs to. (must end in /)
+outfile_prefix = 'CompileV3-'
 
 # =============================================================================
 #%% Script
@@ -119,6 +121,7 @@ for i_model in dict_model:
             
             
             df_i = pd.concat([pd.read_csv(infile_path_var[0])])
+            input('check')
             print('Joining new data in df_i to df_export')
             df_i = df_i[infile_var_col] # crop the repeated columns (time,lat,long) from the df
             # df_i = df_i[::-1]
