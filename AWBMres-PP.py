@@ -65,12 +65,15 @@ for f_basecase in fn_list_basecase: # for each basecase...
     df_basecase_in = pd.read_csv(f_basecase,parse_dates=['Date'])
     df_basecase = df_basecase_in.set_index(['Date'])
     
+    # TODO: Calculate the net wet days bool column, then: https://stackoverflow.com/questions/30311211/pandas-groupby-to-find-percent-true-and-false
+        # also do days below x% of res volume? -> it seems like it's regularly 90% in these sims anyway ?
+    
+    
     # Calculate annual averages for the basecase
     print('   Annual means...')
     GB_year_mean_basecase = df_basecase.groupby([df_basecase.index.map(lambda x: x.year)]).mean()
     GB_year_mean_basecase['YYYY'] = GB_year_mean_basecase.index
     GB_year_mean_basecase.drop(headers_drop,axis=1,inplace=True)
-    
     
     print('   Preparing for e_p calculation...')
     df_ep_basecase = pd.DataFrame()
@@ -114,6 +117,8 @@ for f_basecase in fn_list_basecase: # for each basecase...
         ,'E':df_ep_basecase_merge['X_E'].median()
         ,'dS':df_ep_basecase_merge['X_dS'].median()}
     
+    
+    print(results_BC_Ep_Q)
     # Glob list of relevant comparison results (same i_rcp and i_bias)
     form_RCM = f'{i_run}*~{i_c_rcp}~{i_c_bias}.csv'
     fn_list_RCM = glob.glob(os.path.join(dir_results_in,form_RCM)) 
@@ -128,6 +133,9 @@ for f_basecase in fn_list_basecase: # for each basecase...
         # load comparison data
         df_RCM_in = pd.read_csv(f_RCM,parse_dates=['Date'])
         df_RCM = df_RCM_in.set_index(['Date']) 
+        
+        # TODO: Calculate the net wet bool column for the RCM
+        
     
         # Same process to get a GB_year_mean_comparison
         GB_year_mean_RCM = df_RCM.groupby([df_RCM.index.map(lambda x: x.year)]).mean()
@@ -160,6 +168,9 @@ for f_basecase in fn_list_basecase: # for each basecase...
         GB_year_mean_RCM['resVol%_%change'] = 100*(GB_year_mean_RCM['resVol_beforespill[%]']-GB_year_mean_basecase['resVol_beforespill[%]'])/GB_year_mean_basecase['resVol_beforespill[%]']
         GB_year_mean_RCM['Qtotal_%change'] = 100*(GB_year_mean_RCM['Qtotal']-GB_year_mean_basecase['Qtotal'])/GB_year_mean_basecase['Qtotal']
 
+
+
+
         # Either add a fn_RCM column and groupby later to separate, or save individual results to file as quick fix?
         print(f'Saving annual stats from {fn_RCM} to file...')
         
@@ -169,26 +180,17 @@ for f_basecase in fn_list_basecase: # for each basecase...
         GB_year_mean_RCM.to_csv(os.path.join(dir_out_change,fn_out_change),index=True)
         
     
-    
-
-
 # =============================================================================
-# %% Percentage of [condition] days
+# %% TODO: Exceedance/Freq analysis of the climate data?
 # =============================================================================
-    
 
-
-
-# =============================================================================
-# %% Exceedance/Freq analysis of the climate data?
-# =============================================================================
 
 
 
 # =============================================================================
 # %% Data vis
 # =============================================================================
-
+    
 
 
 
